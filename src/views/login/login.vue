@@ -47,19 +47,25 @@
           <el-button type="primary" class="btn" @click="submitForm" :disabled="!form.key">登录</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" class="btn">注册</el-button>
+          <el-button type="primary" class="btn" @click="model">注册</el-button>
         </el-form-item>
       </el-form>
     </div>
     <div class="right">
       <img src="@/assets/images/login_banner_ele.png" alt />
     </div>
+    <!-- 模态框 -->
+    <model ref="son_model"></model>
   </div>
 </template>
 
 <script>
+import model from "./model.vue";
 export default {
   name: "login",
+  components: {
+    model
+  },
   data() {
     return {
       form: {
@@ -100,12 +106,15 @@ export default {
           this.$message.warning("白痴！");
         }
       });
+    },
+    model() {
+      this.$refs.son_model.dialogFormVisible = true;
     }
   }
 };
 </script>
 
-<style lang="less" >
+<style lang="less" scoped>
 .login {
   height: 100%;
   display: flex;
