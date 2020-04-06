@@ -1,11 +1,7 @@
 <template>
-<<<<<<< HEAD
-  <div>
-=======
   <div class="app">
     <router-link to="/"></router-link>
     <router-view></router-view>
->>>>>>> login
   </div>
 </template>
 
