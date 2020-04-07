@@ -1,9 +1,10 @@
 <template>
   <div class="model">
-    <el-dialog :visible.sync="dialogFormVisible" :show-close="false">
+    <el-dialog :visible.sync="dialogFormVisible" :show-close="false" width="600px">
       <div slot="title" class="title">用户注册</div>
-      <el-form :model="form">
-        <el-form-item label="头像">
+      <!-- form表单 -->
+      <el-form :model="form" :rules="rules" ref="form" label-width="80px">
+        <el-form-item label="头像" prop="avatar">
           <el-upload
             name="image"
             class="avatar-uploader"
@@ -11,35 +12,166 @@
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload"
+            :on-change="test"
           >
             <img v-if="imageUrl" :src="imageUrl" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
+        <el-form-item label="昵称" prop="username">
+          <el-input clearable v-model="form.username"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input clearable v-model="form.email"></el-input>
+        </el-form-item>
+        <el-form-item label="手机" prop="phone">
+          <el-input clearable v-model="form.phone"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input clearable v-model="form.password" show-password></el-input>
+        </el-form-item>
+        <el-form-item label="图形码" prop="code">
+          <el-row>
+            <el-col :span="16">
+              <el-input clearable v-model="form.code"></el-input>
+            </el-col>
+            <el-col :span="7" :offset="1">
+              <img @click="imgClick" class="img" :src="codeUrl" alt />
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item label="验证码" prop="rcode">
+          <el-row>
+            <el-col :span="16">
+              <el-input clearable v-model="form.rcode"></el-input>
+            </el-col>
+            <el-col :span="7" :offset="1">
+              <el-button @click="getCode">获取用户验证码</el-button>
+            </el-col>
+          </el-row>
+        </el-form-item>
       </el-form>
+      <div slot="footer" class="submit">
+        <el-button @click="dialogFormVisible=false">取消</el-button>
+        <el-button type="primary" @click="submit">确定</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
+import getPhoneCode from "@/api/api.js";
 export default {
   name: "model",
   data() {
     return {
       baseURL: process.env.VUE_APP_URL,
+      codeUrl: process.env.VUE_APP_URL + "/captcha?type=sendsms",
       form: {
-        avatar: ""
+        avatar: "",
+        username: "",
+        email: "",
+        phone: "",
+        password: "",
+        code: "",
+        rcode: ""
       },
       imageUrl: "",
-      dialogFormVisible: true
+      dialogFormVisible: false,
+      rules: {
+        avatar: [
+          { required: true, message: "头像要上传哦", targger: "change" }
+        ],
+        username: [{ required: true, message: "请输入昵称", targger: "blur" }],
+        email: [
+          // { required: true, message: "邮箱要填", targger: "blur" },
+          {
+            required: true,
+            validator: (rule, value, callback) => {
+              if (!value) {
+                return callback("邮箱要填");
+              }
+              let reg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/;
+              if (reg.test(value)) {
+                callback();
+              } else {
+                callback("格式不正确哦");
+              }
+            },
+            targger: "change"
+          }
+        ],
+        phone: [
+          // { required: true, message: "请输入手机号码", targger: "blur" },
+          {
+            required: true,
+            validator: (rule, value, callback) => {
+              if (!value) {
+                return callback("请输入手机号码");
+              }
+              let reg = /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/;
+              if (reg.test(value)) {
+                callback();
+              } else {
+                callback("格式不正确哦");
+              }
+            },
+            targger: "change"
+          }
+        ],
+        password: [
+          { required: true, message: "密码要填", targger: "blur" },
+          { min: 6, max: 12, message: "长度6-12位", targger: "change" }
+        ],
+        code: [
+          { required: true, message: "请输入图形验证码", targger: "blur" },
+          { min: 4, max: 4, message: "请输入4位图形验证码", targger: "change" }
+        ],
+        rcode: [
+          { required: true, message: "请输入验证码", targger: "blur" },
+          { min: 4, max: 4, message: "请输入4位验证码", targger: "change" }
+        ]
+      }
     };
   },
   methods: {
+    //获取短信验证
+    getCode() {
+      let flag = true;
+      this.$refs.form.validateField(["phone", "code"], err => {
+        if (!err) {
+          flag = false;
+        }
+        if (flag === false) {
+          return;
+        } else {
+          //调用接口
+          // console.log(getPhoneCode);
+        }
+      });
+      getPhoneCode({ phone: this.form.phone, code: this.form.code }).then(
+        res => {
+          console.log(res);
+          this.$message(res.data.data.captcha + "");
+        }
+      );
+    },
+    //刷新图形验证码
+    imgClick() {
+      this.codeUrl =
+        process.env.VUE_APP_URL + "/captcha?type=sendsms" + Date.now();
+    },
+    test() {
+      //主动触发验证，头像验证
+      this.$refs.form.validateField("avatar");
+    },
+    //文件预览
     handleAvatarSuccess(res, file) {
       this.imageUrl = URL.createObjectURL(file.raw);
       // this.imageUrl = this.baseURL + "/" + res.data.file_path;
       this.form.avatar = res.data.file_path;
     },
+    //上传前判断
     beforeAvatarUpload(file) {
       // const isJPG = file.type === "image/jpeg";
       const isJPG = true;
@@ -52,6 +184,16 @@ export default {
         this.$message.error("上传头像图片大小不能超过 2MB!");
       }
       return isJPG && isLt2M;
+    },
+    //全部验证
+    submit() {
+      this.$refs.form.validate(valid => {
+        if (valid) {
+          this.$message.success("ok");
+        } else {
+          this.$message.error("白痴！");
+        }
+      });
     }
   }
 };
@@ -70,6 +212,14 @@ export default {
   }
   .el-dialog__header {
     padding: 0px;
+  }
+  .submit {
+    text-align: center;
+  }
+  .img {
+    display: inline-block;
+    height: 40px;
+    border: 1px solid #ccc;
   }
 }
 </style>

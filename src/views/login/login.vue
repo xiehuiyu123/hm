@@ -75,7 +75,19 @@ export default {
         key: false
       },
       rules: {
-        phone: [{ required: true, message: "请输入手机号", trigger: "blur" }],
+        phone: [
+          { required: true, message: "请输入手机号", trigger: "blur" },
+          {
+            validator: (rule, value, callback) => {
+              let reg = /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/;
+              if (reg.test(value)) {
+                callback();
+              } else {
+                callback("手机格式不对");
+              }
+            }
+          }
+        ],
         password: [
           { required: true, message: "请输入密码", trigger: "blur" },
           {
@@ -110,7 +122,7 @@ export default {
     model() {
       this.$refs.son_model.dialogFormVisible = true;
     }
-  },
+  }
 };
 </script>
 
