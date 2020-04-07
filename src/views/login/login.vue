@@ -110,7 +110,7 @@ export default {
     model() {
       this.$refs.son_model.dialogFormVisible = true;
     }
-  }
+  },
 };
 </script>
 
