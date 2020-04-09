@@ -32,11 +32,11 @@
               ></el-input>
             </el-col>
             <el-col :span="6">
-              <img class="code" src="@/assets/images/login_banner_ele.png" alt />
+              <img @click="codeClick" class="code" :src="codeUrl" alt />
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="key">
           <el-checkbox v-model="form.key">
             我已阅读并同意
             <el-link type="primary">用户协议</el-link>和
@@ -44,7 +44,7 @@
           </el-checkbox>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" class="btn" @click="submitForm" :disabled="!form.key">登录</el-button>
+          <el-button type="primary" class="btn" @click="submitForm">登录</el-button>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" class="btn" @click="model">注册</el-button>
@@ -60,6 +60,8 @@
 </template>
 
 <script>
+import { userLogin } from "@/api/login.js";
+import { setToken } from "@/utils/token.js";
 import model from "./model.vue";
 export default {
   name: "login",
@@ -68,11 +70,12 @@ export default {
   },
   data() {
     return {
+      codeUrl: process.env.VUE_APP_URL + "/captcha?type=login",
       form: {
         phone: "",
         password: "",
         code: "",
-        key: false
+        key: ""
       },
       rules: {
         phone: [
@@ -105,15 +108,43 @@ export default {
             message: "正确输入验证码，白痴4位",
             trigger: "change"
           }
+        ],
+        key: [
+          { required: true, message: "请勾选选协议", trigger: "change" },
+          {
+            validator: (rule, value, callback) => {
+              if (value === true) {
+                callback();
+              } else {
+                callback("请勾选选协议");
+              }
+            },
+            trigger: "change"
+          }
         ]
       }
     };
   },
   methods: {
+    //刷新验证码
+    codeClick() {
+      this.codeUrl =
+        process.env.VUE_APP_URL + "/captcha?type=login" + Date.now();
+    },
+    //登录请求
     submitForm() {
       this.$refs.form.validate(valid => {
         if (valid) {
-          this.$message.success("恭喜你，登录成功");
+          userLogin(this.form).then(res => {
+            console.log(res);
+            setToken(res.data.token);
+            // this.$message.success("恭喜你，登录成功");
+            this.$notify({
+              title: "成功",
+              message: "恭喜你，登录成功",
+              type: "success"
+            });
+          });
         } else {
           this.$message.warning("白痴！");
         }
