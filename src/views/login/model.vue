@@ -46,7 +46,10 @@
               <el-input clearable v-model="form.rcode"></el-input>
             </el-col>
             <el-col :span="7" :offset="1">
-              <el-button @click="getCode">获取用户验证码</el-button>
+              <el-button @click="getCode" :disabled="timeCode != 20">
+                <span v-if="timeCode !=20">{{timeCode}}秒后</span>
+                <span v-else>获取用户验证码</span>
+              </el-button>
             </el-col>
           </el-row>
         </el-form-item>
@@ -60,11 +63,13 @@
 </template>
 
 <script>
-import getPhoneCode from "@/api/api.js";
+import { getPhoneCode, register } from "@/api/api.js";
+// import func from "../../../vue-temp/vue-editor-bridge";
 export default {
   name: "model",
   data() {
     return {
+      timeCode: 20,
       baseURL: process.env.VUE_APP_URL,
       codeUrl: process.env.VUE_APP_URL + "/captcha?type=sendsms",
       form: {
@@ -139,22 +144,33 @@ export default {
     getCode() {
       let flag = true;
       this.$refs.form.validateField(["phone", "code"], err => {
-        if (!err) {
+        if (err != "") {
           flag = false;
         }
-        if (flag === false) {
-          return;
-        } else {
-          //调用接口
-          // console.log(getPhoneCode);
-        }
       });
-      getPhoneCode({ phone: this.form.phone, code: this.form.code }).then(
-        res => {
-          console.log(res);
-          this.$message(res.data.data.captcha + "");
-        }
-      );
+      if (flag === false) {
+        return;
+      } else {
+        //调用接口
+        getPhoneCode({ phone: this.form.phone, code: this.form.code }).then(
+          res => {
+            console.log(res);
+            if (res.code) {
+              this.$message.success(res.data.captcha + "");
+              this.timeCode--;
+              let time = setInterval(() => {
+                this.timeCode--;
+                if (this.timeCode <= 0) {
+                  clearInterval(time);
+                  this.timeCode = 20;
+                }
+              }, 1000);
+            } else {
+              this.$message(res.data.message);
+            }
+          }
+        );
+      }
     },
     //刷新图形验证码
     imgClick() {
@@ -185,15 +201,28 @@ export default {
       }
       return isJPG && isLt2M;
     },
-    //全部验证
+    //注册，全部验证
     submit() {
       this.$refs.form.validate(valid => {
         if (valid) {
-          this.$message.success("ok");
+          register(this.form).then(res => {
+            console.log(res);
+            this.$message.success("注册成功");
+            this.dialogFormVisible = false;
+          });
         } else {
           this.$message.error("白痴！");
         }
       });
+    }
+  },
+  //清空表单
+  watch: {
+    dialogFormVisible(value) {
+      if (!value) {
+        this.$refs.form.resetFields();
+        this.imageUrl = "";
+      }
     }
   }
 };
