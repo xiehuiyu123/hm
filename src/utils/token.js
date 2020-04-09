@@ -6,7 +6,8 @@ function setToken(value, name = "token") {
 
 //获取token
 function getToken(name = "token") {
-  localStorage.getItem(name)
+  return localStorage.getItem(name)
+
 }
 
 //删除token

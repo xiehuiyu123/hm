@@ -144,6 +144,8 @@ export default {
               message: "恭喜你，登录成功",
               type: "success"
             });
+            //登录成功调到home页面
+            this.$router.push("/home");
           });
         } else {
           this.$message.warning("白痴！");
