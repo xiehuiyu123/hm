@@ -6,5 +6,11 @@ function getInfo() {
     method: "get",
   });
 }
+function logOut() {
+  return http({
+    url: "/logout",
+    method: "get",
+  });
+}
 
-export { getInfo }
+export { getInfo, logOut }

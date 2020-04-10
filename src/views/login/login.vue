@@ -61,7 +61,7 @@
 
 <script>
 import { userLogin } from "@/api/login.js";
-import { setToken } from "@/utils/token.js";
+import { setToken, getToken } from "@/utils/token.js";
 import model from "./model.vue";
 export default {
   name: "login",
@@ -154,6 +154,12 @@ export default {
     },
     model() {
       this.$refs.son_model.dialogFormVisible = true;
+    }
+  },
+  // 有token直接去首页
+  created() {
+    if (getToken()) {
+      this.$router.push("/home");
     }
   }
 };

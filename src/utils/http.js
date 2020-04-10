@@ -10,7 +10,8 @@ const http = axios.create({
 });
 //请求拦截
 http.interceptors.request.use(function (config) {
-  if (getToken()) { //设置请求头，有就设置，没有就不设置
+  //设置请求头，有就设置，没有就不设置
+  if (getToken()) {
     config.headers.token = getToken()
   }
   return config;
@@ -26,7 +27,7 @@ http.interceptors.response.use(function (res) {
     //没有token直接去登录页
     removeToken();
     router.push('/');
-    return false
+    return Message.warning('你还未登录或登录失效');
   } else {
     Message.error(res.data.message);
     return Promise.reject("error");
