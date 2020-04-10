@@ -136,7 +136,7 @@ export default {
       this.$refs.form.validate(valid => {
         if (valid) {
           userLogin(this.form).then(res => {
-            console.log(res);
+            // console.log(res);
             setToken(res.data.token);
             // this.$message.success("恭喜你，登录成功");
             this.$notify({
