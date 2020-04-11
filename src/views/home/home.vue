@@ -7,8 +7,8 @@
         <span>黑马面面</span>
       </div>
       <div class="right">
-        <img :src="user.avatar" alt />
-        <span>{{user.username}}，你好</span>
+        <img :src="$store.state.user.avatar" alt />
+        <span>{{$store.state.user.username}}，你好</span>
         <el-button type="primary" size="mini" @click="out">退出</el-button>
       </div>
     </el-header>
@@ -58,7 +58,7 @@ import { removeToken, getToken } from "@/utils/token.js";
 export default {
   data() {
     return {
-      user: "",
+      // user: "",
       collapse: false
     };
   },
@@ -89,8 +89,10 @@ export default {
       return this.$router.push("/");
     }
     getInfo().then(res => {
-      this.user = res.data;
-      this.user.avatar = process.env.VUE_APP_URL + "/" + res.data.avatar;
+      // 设置状态管理vuex里面的数据
+      this.$store.commit("setUser", res.data);
+      // this.user = res.data;
+      // this.user.avatar = process.env.VUE_APP_URL + "/" + res.data.avatar;
     });
   }
 };
