@@ -6,7 +6,7 @@
         <img src="@/assets/images/11.png" alt />
         <span>黑马面面</span>
       </div>
-      <div class="right">
+      <div class="right" v-if="$store.state.user.avatar">
         <img :src="$store.state.user.avatar" alt />
         <span>{{$store.state.user.username}}，你好</span>
         <el-button type="primary" size="mini" @click="out">退出</el-button>
@@ -44,7 +44,7 @@
         </el-menu>
       </el-aside>
       <!-- 右侧内容区域 -->
-      <el-main>
+      <el-main class="main">
         <!-- 二级路由区域 -->
         <router-view></router-view>
       </el-main>
@@ -135,6 +135,9 @@ export default {
         font-size: 14px;
         font-weight: bold;
         color: rgba(99, 99, 99, 1);
+      }
+      .main {
+        background-color: #e8e9ec;
       }
     }
   }
