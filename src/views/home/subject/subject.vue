@@ -58,6 +58,7 @@
       <!-- 分页按钮 -->
       <div class="pagination">
         <el-pagination
+          background
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page="pagination.page"
@@ -76,6 +77,7 @@
 <script>
 import addSubject from "./addSubject.vue";
 
+import { getToken } from "@/utils/token.js";
 import { getSubjectData, setStatus, removeSubject } from "@/api/subject.js";
 export default {
   components: {
@@ -159,9 +161,9 @@ export default {
     handleSizeChange(val) {
       // console.log(`每页 ${val} 条`);
       this.pagination.pageSize = val;
+      this.search();
       //将当前页面改变为1
-      this.pagination.page = 1;
-      this.getData();
+      // this.pagination.page = 1;
     },
     handleCurrentChange(val) {
       // console.log(`当前页: ${val}`);
@@ -176,13 +178,16 @@ export default {
         ...this.form
       };
       getSubjectData(_page).then(res => {
-        // console.log(res);
         this.list = res.data.items;
         this.pagination.total = res.data.pagination.total;
       });
     }
   },
   created() {
+    //没有token就不调用接口
+    if (!getToken()) {
+      return this.$router.push("/");
+    }
     this.getData();
   }
 };
