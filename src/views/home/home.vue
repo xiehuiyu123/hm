@@ -21,25 +21,14 @@
           :collapse="collapse"
           :router="true"
         >
-          <el-menu-item index="/home/chart">
-            <i class="el-icon-pie-chart"></i>
-            <span slot="title">数据概览</span>
-          </el-menu-item>
-          <el-menu-item index="/home/userList">
-            <i class="el-icon-user"></i>
-            <span slot="title">用户列表</span>
-          </el-menu-item>
-          <el-menu-item index="/home/question">
-            <i class="el-icon-edit-outline"></i>
-            <span slot="title">题库列表</span>
-          </el-menu-item>
-          <el-menu-item index="/home/business">
-            <i class="el-icon-office-building"></i>
-            <span slot="title">企业列表</span>
-          </el-menu-item>
-          <el-menu-item index="/home/subject">
-            <i class="el-icon-notebook-2"></i>
-            <span slot="title">学科列表</span>
+          <el-menu-item
+            :index="'/home/'+item.path"
+            v-for="(item,index) in $router.options.routes[1].children"
+            :key="index"
+            v-show="item.meta.rules.includes($store.state.rules)"
+          >
+            <i :class="item.meta.icon"></i>
+            <span slot="title">{{item.meta.title}}</span>
           </el-menu-item>
         </el-menu>
       </el-aside>
@@ -74,10 +63,10 @@ export default {
         center: true
       })
         .then(() => {
-          this.$message.success("退出登录成功!");
           logOut().then(() => {
             //删除token，回到登录页
             removeToken();
+            this.$message.success("退出登录成功!");
             this.$router.push("/");
           });
         })
@@ -91,11 +80,23 @@ export default {
     if (!getToken()) {
       return this.$router.push("/");
     }
+
     getInfo().then(res => {
+      //设置 账号身份
+      this.$store.commit("setRules", res.data.role);
       // 设置状态管理vuex里面的数据
       this.$store.commit("setUser", res.data);
-      // this.user = res.data;
-      // this.user.avatar = process.env.VUE_APP_URL + "/" + res.data.avatar;
+      //账号身份权限管理
+
+      if (!this.$route.meta.rules.includes(res.data.role)) {
+        this.$message.warning("你没有权限访问该页面哦");
+      }
+      if (res.data.status == 0) {
+        //状态管理判断，没有权限进不去
+        this.$message.warning("您账号已被禁用，请联系管理员");
+        removeToken();
+        this.$router.push("/");
+      }
     });
   }
 };

@@ -7,7 +7,6 @@ import 'element-ui/lib/theme-chalk/index.css';
 
 //vuex状态管理
 import store from "@/store/index.js"
-
 Vue.use(ElementUI);
 
 Vue.config.productionTip = false

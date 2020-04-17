@@ -20,7 +20,12 @@
         <el-form-item>
           <el-button type="primary" @click="search">搜索</el-button>
           <el-button @click="remove">清除</el-button>
-          <el-button type="primary" icon="el-icon-plus" @click="model">新增学科</el-button>
+          <el-button
+            type="primary"
+            icon="el-icon-plus"
+            @click="model"
+            v-if="$store.state.rules != '学生'"
+          >新增学科</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -42,7 +47,7 @@
             <span :class="{red: scope.row.status != 1}">{{scope.row.status == 1 ? "启用" : "禁用"}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="操作" v-if="$store.state.rules != '学生'">
           <template slot-scope="scope">
             <el-link :underline="false" type="primary" @click="edit(scope.row)">编辑</el-link>
             <el-link
@@ -51,7 +56,12 @@
               type="primary"
               @click="status(scope.row.id)"
             >{{scope.row.status == 1 ? "禁用" : "启用"}}</el-link>
-            <el-link :underline="false" type="primary" @click="removeID(scope.row.id)">删除</el-link>
+            <el-link
+              :underline="false"
+              type="primary"
+              @click="removeID(scope.row.id)"
+              v-if="$route.meta.rules.includes('管理')"
+            >删除</el-link>
           </template>
         </el-table-column>
       </el-table>

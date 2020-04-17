@@ -74,6 +74,18 @@ export default {
     resetForm() {
       this.dialogFormVisible = false;
     }
+  },
+  // 清空表单数据及提示
+  watch: {
+    dialogFormVisible(val) {
+      if (val) {
+        if (this.son == "新增") {
+          this.$nextTick(() => {
+            this.$refs.form.resetFields();
+          });
+        }
+      }
+    }
   }
 };
 </script>

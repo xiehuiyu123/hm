@@ -1,7 +1,7 @@
 <template>
   <div class="addSubject">
     <el-dialog :visible.sync="dialogFormVisible" width="602px">
-      <div slot="title" class="title">新增学科</div>
+      <div slot="title" class="title">{{data == "新增" ? "新增学科" : "编辑学科"}}</div>
       <el-form :model="form" ref="form" :rules="rules" label-width="80px">
         <el-form-item label="学科编号" prop="rid">
           <el-input v-model="form.rid"></el-input>
