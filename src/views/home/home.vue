@@ -36,9 +36,9 @@
       <el-main class="main">
         <!-- 二级路由区域 -->
         <!-- keep-alive，缓存组件不重新刷新组件，保留组件的状态 -->
-        <keep-alive>
+        <!-- <keep-alive> -->
           <router-view></router-view>
-        </keep-alive>
+        <!-- </keep-alive> -->
       </el-main>
     </el-container>
   </el-container>

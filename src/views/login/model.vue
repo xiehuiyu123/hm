@@ -177,8 +177,8 @@ export default {
       this.codeUrl =
         process.env.VUE_APP_URL + "/captcha?type=sendsms" + Date.now();
     },
+    //主动触发验证，头像验证
     test() {
-      //主动触发验证，头像验证
       this.$refs.form.validateField("avatar");
     },
     //文件预览
