@@ -60,7 +60,7 @@
               :underline="false"
               type="primary"
               @click="removeID(scope.row.id)"
-              v-if="$route.meta.rules.includes('管理')"
+              v-if="$route.meta.rules.includes($store.state.rules)"
             >删除</el-link>
           </template>
         </el-table-column>
