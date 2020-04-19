@@ -251,47 +251,50 @@ export default {
   },
   watch: {
     dialogFormVisible(val) {
-      if (!val) {
-        this.form = {
-          subject: "",
-          step: "",
-          enterprise: "",
-          city: [],
-          type: 1,
-          difficulty: 1,
-          title: "",
-          single_select_answer: "", //单选答案
-          multiple_select_answer: [], //多选答案
-          short_answer: "",
-          video: "",
-          answer_analyze: "",
-          remark: "",
-          // 题目选项
-          select_options: [
-            {
-              label: "A",
-              text: "狗不理",
-              image: ""
-            },
-            {
-              label: "B",
-              text: "猫不理",
-              image: ""
-            },
-            {
-              label: "C",
-              text: "麻花",
-              image: ""
-            },
-            {
-              label: "D",
-              text: "炸酱面",
-              image: ""
-            }
-          ]
-        };
-        this.$refs.form.resetFields();
-        this.selectChange();
+      if (val) {
+        if (this.type == "新增") {
+          this.$nextTick(() => {
+            this.form = {
+              subject: "",
+              step: "",
+              enterprise: "",
+              city: [],
+              type: 1,
+              difficulty: 1,
+              title: "",
+              single_select_answer: "", //单选答案
+              multiple_select_answer: [], //多选答案
+              short_answer: "",
+              video: "",
+              answer_analyze: "",
+              remark: "",
+              // 题目选项
+              select_options: [
+                {
+                  label: "A",
+                  text: "狗不理",
+                  image: ""
+                },
+                {
+                  label: "B",
+                  text: "猫不理",
+                  image: ""
+                },
+                {
+                  label: "C",
+                  text: "麻花",
+                  image: ""
+                },
+                {
+                  label: "D",
+                  text: "炸酱面",
+                  image: ""
+                }
+              ]
+            };
+            this.$refs.form.resetFields();
+          });
+        }
       }
     }
   }
